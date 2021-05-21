@@ -61,6 +61,16 @@ public class Board {
                     capturePossible = true;
                 }
             }
+
+            to = new Position(from.getX() + i, from.getY() - dir);
+            if (!this.isInBoard(to)) {
+                continue;
+            }
+            if (this.getPiece(to) != null && this.getPiece(to).getTeam() != this.toPlay){
+                if(this.addCapturePossibleMove(from, to)){
+                    capturePossible = true;
+                }
+            }
         }
         return capturePossible;
     }
