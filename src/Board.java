@@ -1,4 +1,5 @@
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +13,7 @@ public class Board {
     private Position selectedPiece;
     private boolean color;
 
-    public Board(){
+    public Board() {
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < this.pieces.length; j++) {
                 if ((i + j) % 2 == 0) {
@@ -42,7 +43,6 @@ public class Board {
         if (capturePossible) {
             this.possibleMoves = this.possibleMoves.stream().filter(Move::isCapture).collect(Collectors.toList());
         }
-        System.out.println(this.possibleMoves.size());
         //TODO Compute possible moves and store them in possibleMoves
     }
 
@@ -61,6 +61,7 @@ public class Board {
                     capturePossible = true;
                 }
             }
+
         }
         return capturePossible;
     }
@@ -103,7 +104,9 @@ public class Board {
             if (possibleMove.getFrom().equals(this.selectedPiece)) {
                 int x = possibleMove.getTo().getX();
                 int y = possibleMove.getTo().getY();
-                possibleMove.draw(g, x * 72, y * 72);
+
+                g.setColor(new Color(38, 177, 38));
+                g.fillOval(x * 72 + 16, y * 72 + 16, 40, 40);
             }
         }
     }
