@@ -43,6 +43,7 @@ public class Board {
         if (capturePossible) {
             this.possibleMoves = this.possibleMoves.stream().filter(Move::isCapture).collect(Collectors.toList());
         }
+        System.out.println(this.possibleMoves.size());
         //TODO Compute possible moves and store them in possibleMoves
     }
 
@@ -62,6 +63,15 @@ public class Board {
                 }
             }
 
+            to = new Position(from.getX() + i, from.getY() - dir);
+            if (!this.isInBoard(to)) {
+                continue;
+            }
+            if (this.getPiece(to) != null && this.getPiece(to).getTeam() != this.toPlay){
+                if(this.addCapturePossibleMove(from, to)){
+                    capturePossible = true;
+                }
+            }
         }
         return capturePossible;
     }
