@@ -1,3 +1,4 @@
+package fr.checkers;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -34,17 +35,20 @@ public class Board {
             for (int j = 0; j < this.pieces[i].length; j++) {
                 if (this.pieces[i][j] != null && this.pieces[i][j].getTeam() == this.toPlay) {
                     Position from = new Position(j, i);
-                    if(this.addPiecePossibleMoves(from, dir)) {
-                        capturePossible = true;
+                    if (this.getPiece(from).isQueen()) {
+                        this.addQueenPossibleMove(from);
+                    } else {
+                        if(this.addPiecePossibleMoves(from, dir)) {
+                            capturePossible = true;
+                        }
                     }
+
                 }
             }
         }
         if (capturePossible) {
             this.possibleMoves = this.possibleMoves.stream().filter(Move::isCapture).collect(Collectors.toList());
         }
-        System.out.println(this.possibleMoves.size());
-        //TODO Compute possible moves and store them in possibleMoves
     }
 
     public boolean addPiecePossibleMoves(Position from, int dir) {
@@ -76,8 +80,35 @@ public class Board {
         return capturePossible;
     }
 
+    private void addQueenPossibleMove(Position from) {
+        for (int i = -1; i <= 1; i += 2) {
+            for (int j = -1; j <= 1; j += 2) {
+                int dist = 1;
+                while(true) {
+                    Position to = new Position(from.getX() + i * dist, from.getY() + j * dist);
+
+                    if (!this.isInBoard(to)) {
+                        break;
+                    }
+
+                    if (this.getPiece(to) == null) {
+                        this.possibleMoves.add(new Move(from, to));
+                    } else if (this.getPiece(to).getTeam() != this.toPlay) {
+                        this.addCapturePossibleMove(from, to);
+                        break;
+                    } else {
+                        break;
+                    }
+                    dist++;
+                }
+            }
+        }
+    }
+
     private boolean addCapturePossibleMove(Position from, Position capture) {
-        Position to = new Position(from.getX() + (capture.getX() - from.getX()) * 2, from.getY() + (capture.getY() - from.getY()) * 2);
+        int dirX = (capture.getX() - from.getX()) / Math.abs(capture.getX() - from.getX());
+        int dirY = (capture.getY() - from.getY()) / Math.abs(capture.getY() - from.getY());
+        Position to = new Position(capture.getX() + dirX, capture.getY() + dirY);
         if (!this.isInBoard(to) || this.getPiece(to) != null) {
             return false;
         }
@@ -146,13 +177,33 @@ public class Board {
     private void playMove(Move move) {
         Piece piece = this.getPiece(move.getFrom());
         this.setPiece(move.getFrom(), null );
-        this.setPiece(move.getTo(), piece );
+        this.setPiece(move.getTo(), piece);
+
+        int backRow = this.toPlay == Team.BLACK ? 9 : 0;
+        if (move.getTo().getY() == backRow) {
+            piece.setQueen(true);
+        }
+
         if (move.isCapture()) {
             this.setPiece(move.getCapturePosition(), null);
+            if (this.checkChainCapture(move.getTo())) {
+                this.selectedPiece = move.getTo();
+                return;
+            }
         }
 
         this.toPlay = this.toPlay == Team.WHITE ? Team.BLACK : Team.WHITE;
         this.computePossibleMoves();
         this.selectedPiece = null;
+    }
+
+    private boolean checkChainCapture(Position from) {
+        this.possibleMoves.clear();
+        if (this.addPiecePossibleMoves(from, 1)) {
+            this.possibleMoves = this.possibleMoves.stream().filter(Move::isCapture).collect(Collectors.toList());
+            return true;
+        }
+
+        return false;
     }
 }

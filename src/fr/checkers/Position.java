@@ -1,3 +1,5 @@
+package fr.checkers;
+
 import java.util.Objects;
 
 public class Position {

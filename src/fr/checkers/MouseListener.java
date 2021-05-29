@@ -1,3 +1,5 @@
+package fr.checkers;
+
 import java.awt.event.MouseEvent;
 
 public class MouseListener implements java.awt.event.MouseListener {

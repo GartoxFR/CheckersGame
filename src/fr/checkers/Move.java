@@ -1,3 +1,5 @@
+package fr.checkers;
+
 import java.awt.*;
 
 public class Move {
