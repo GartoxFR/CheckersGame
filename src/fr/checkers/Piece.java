@@ -20,7 +20,7 @@ public class Piece {
         }
     }
 
-    private Team team;
+    private final Team team;
     private boolean queen;
 
     public Piece(Team team) {

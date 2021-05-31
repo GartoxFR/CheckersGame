@@ -4,7 +4,7 @@ import java.awt.event.MouseEvent;
 
 public class MouseListener implements java.awt.event.MouseListener {
 
-    private Board board;
+    private final Board board;
 
     public MouseListener(Board board) {
 

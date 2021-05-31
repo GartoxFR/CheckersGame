@@ -8,11 +8,10 @@ import java.util.stream.Collectors;
 
 public class Board {
 
-    private Piece[][] pieces = new Piece[10][10];
+    private final Piece[][] pieces = new Piece[10][10];
     private List<Move> possibleMoves = new ArrayList<>();
     private Team toPlay = Team.WHITE;
     private Position selectedPiece;
-    private boolean color;
 
     public Board() {
         for (int i = 0; i < 4; i++) {
@@ -27,10 +26,10 @@ public class Board {
         this.computePossibleMoves();
     }
 
-    public void computePossibleMoves() {
+    private void computePossibleMoves() {
         boolean capturePossible = false;
         this.possibleMoves.clear();
-        int dir = this.toPlay == Team.BLACK ? 1 : -1;
+        int dir = this.toPlay.getForwardDirection();
         for (int i = 0; i < this.pieces.length ; i++) {
             for (int j = 0; j < this.pieces[i].length; j++) {
                 if (this.pieces[i][j] != null && this.pieces[i][j].getTeam() == this.toPlay) {
@@ -51,11 +50,11 @@ public class Board {
         }
     }
 
-    public boolean addPiecePossibleMoves(Position from, int dir) {
+    private boolean addPiecePossibleMoves(Position from, int dir) {
         boolean capturePossible = false;
         for (int i = -1; i <= 1; i += 2) {
             Position to = new Position(from.getX() + i, from.getY() + dir);
-            if (!this.isInBoard(to)) {
+            if (this.isOutOfBound(to)) {
                 continue;
             }
 
@@ -68,7 +67,7 @@ public class Board {
             }
 
             to = new Position(from.getX() + i, from.getY() - dir);
-            if (!this.isInBoard(to)) {
+            if (this.isOutOfBound(to)) {
                 continue;
             }
             if (this.getPiece(to) != null && this.getPiece(to).getTeam() != this.toPlay){
@@ -87,7 +86,7 @@ public class Board {
                 while(true) {
                     Position to = new Position(from.getX() + i * dist, from.getY() + j * dist);
 
-                    if (!this.isInBoard(to)) {
+                    if (this.isOutOfBound(to)) {
                         break;
                     }
 
@@ -109,23 +108,23 @@ public class Board {
         int dirX = (capture.getX() - from.getX()) / Math.abs(capture.getX() - from.getX());
         int dirY = (capture.getY() - from.getY()) / Math.abs(capture.getY() - from.getY());
         Position to = new Position(capture.getX() + dirX, capture.getY() + dirY);
-        if (!this.isInBoard(to) || this.getPiece(to) != null) {
+        if (this.isOutOfBound(to) || this.getPiece(to) != null) {
             return false;
         }
         this.possibleMoves.add(new Move(from, to, capture));
         return true;
     }
 
-    public Piece getPiece(Position position) {
+    private Piece getPiece(Position position) {
         return this.pieces[position.getY()][position.getX()];
     }
 
-    public void setPiece(Position position, Piece piece) {
+    private void setPiece(Position position, Piece piece) {
         this.pieces[position.getY()][position.getX()] = piece;
     }
 
-    public boolean isInBoard(Position position) {
-        return position.getX() >= 0 && position.getX() <= 9 && position.getY() >= 0 && position.getY() <= 9;
+    private boolean isOutOfBound(Position position) {
+        return position.getX() < 0 || position.getX() > 9 || position.getY() < 0 || position.getY() > 9;
     }
 
     public void draw(Graphics g) {
@@ -152,9 +151,6 @@ public class Board {
         }
     }
 
-    public void update() {
-    }
-
     public void onClick(int x, int y) {
 
         Piece clicked = this.pieces[y][x];
@@ -179,7 +175,7 @@ public class Board {
         this.setPiece(move.getFrom(), null );
         this.setPiece(move.getTo(), piece);
 
-        int backRow = this.toPlay == Team.BLACK ? 9 : 0;
+        int backRow = this.toPlay.getPromotionRow();
         if (move.getTo().getY() == backRow) {
             piece.setQueen(true);
         }

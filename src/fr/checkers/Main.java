@@ -4,12 +4,11 @@ public class Main {
 
     public static void main(String[] args) {
         Board board = new Board();
-        Main.mainLoop(board, new Display(board));
+        Main.mainLoop(new Display(board));
     }
 
-    public static void mainLoop(Board board, Display display) {
+    private static void mainLoop(Display display) {
         while (true) {
-            board.update();
             display.repaint();
             try {
                 Thread.sleep(10);
