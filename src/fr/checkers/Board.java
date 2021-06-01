@@ -12,6 +12,7 @@ public class Board {
     private List<Move> possibleMoves = new ArrayList<>();
     private Team toPlay = Team.WHITE;
     private Position selectedPiece;
+    private Team winner;
 
     public Board() {
         for (int i = 0; i < 4; i++) {
@@ -152,7 +153,9 @@ public class Board {
     }
 
     public void onClick(int x, int y) {
-
+        if (winner != null){
+            return;
+        }
         Piece clicked = this.pieces[y][x];
         if (clicked != null && clicked.getTeam() == this.toPlay) {
             this.selectedPiece = new Position(x, y);
@@ -182,6 +185,19 @@ public class Board {
 
         if (move.isCapture()) {
             this.setPiece(move.getCapturePosition(), null);
+            boolean win = true;
+            for (int i = 0 ; i<this.pieces.length ; i++){
+                for(int j = 0 ; j<this.pieces[i].length ; j++){
+                    if(pieces[i][j].getTeam() != toPlay){
+                        win = false;
+                        break;
+                    }
+                }
+            }
+            if(win){
+                this.winner = toPlay;
+                return;
+            }
             if (this.checkChainCapture(move.getTo())) {
                 this.selectedPiece = move.getTo();
                 return;
