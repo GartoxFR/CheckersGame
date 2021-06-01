@@ -1,7 +1,6 @@
 package fr.checkers;
 
 import javax.imageio.ImageIO;
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -41,11 +40,7 @@ public class Piece {
     }
 
     public void draw(Graphics g, int x, int y) {
-        if (this.team == Team.WHITE) {
-            g.setColor(new Color(200, 200, 200));
-        } else {
-            g.setColor(new Color(55, 55, 55));
-        }
+        g.setColor(this.team.getDisplayColor());
 
         g.fillOval(x + 6, y + 6, Piece.SIZE, Piece.SIZE);
 

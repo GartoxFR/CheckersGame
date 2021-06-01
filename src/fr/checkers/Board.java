@@ -8,13 +8,20 @@ import java.util.stream.Collectors;
 
 public class Board {
 
-    private final Piece[][] pieces = new Piece[10][10];
+    private Piece[][] pieces;
     private List<Move> possibleMoves = new ArrayList<>();
     private Team toPlay = Team.WHITE;
     private Position selectedPiece;
     private Team winner;
 
     public Board() {
+        this.reset();
+    }
+
+    private void reset() {
+        this.pieces = new Piece[10][10];
+        this.winner = null;
+        this.toPlay = Team.WHITE;
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < this.pieces.length; j++) {
                 if ((i + j) % 2 == 0) {
@@ -153,7 +160,8 @@ public class Board {
     }
 
     public void onClick(int x, int y) {
-        if (winner != null){
+        if (this.winner != null){
+            this.reset();
             return;
         }
         Piece clicked = this.pieces[y][x];
@@ -185,19 +193,12 @@ public class Board {
 
         if (move.isCapture()) {
             this.setPiece(move.getCapturePosition(), null);
-            boolean win = true;
-            for (int i = 0 ; i<this.pieces.length ; i++){
-                for(int j = 0 ; j<this.pieces[i].length ; j++){
-                    if(pieces[i][j].getTeam() != toPlay){
-                        win = false;
-                        break;
-                    }
-                }
-            }
-            if(win){
-                this.winner = toPlay;
+
+            if(this.checkWin()){
+                this.winner = this.toPlay;
                 return;
             }
+
             if (this.checkChainCapture(move.getTo())) {
                 this.selectedPiece = move.getTo();
                 return;
@@ -209,6 +210,17 @@ public class Board {
         this.selectedPiece = null;
     }
 
+    private boolean checkWin() {
+        for (int i = 0 ; i < this.pieces.length ; i++){
+            for(int j = 0 ; j < this.pieces[i].length ; j++){
+                if(this.pieces[i][j] != null && this.pieces[i][j].getTeam() != this.toPlay){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     private boolean checkChainCapture(Position from) {
         this.possibleMoves.clear();
         if (this.addPiecePossibleMoves(from, 1)) {
@@ -217,5 +229,9 @@ public class Board {
         }
 
         return false;
+    }
+
+    public Team getWinner() {
+        return this.winner;
     }
 }

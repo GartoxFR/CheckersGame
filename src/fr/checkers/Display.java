@@ -4,6 +4,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 
 public class Display extends JPanel {
@@ -28,18 +29,34 @@ public class Display extends JPanel {
 
     @Override
     public void paintComponent(Graphics g) {
-        for (int i = 0; i < Display.BOARD_SIZE; i++) {
-            for (int j = 0; j < Display.BOARD_SIZE; j++) {
-                if ((i + j) % 2 == 0) {
-                    g.setColor(new Color(23, 96, 153));
-                } else {
-                    g.setColor(new Color(144, 213, 189));
+
+        //No winner = party going on
+        if (this.board.getWinner() == null) {
+            //Drawing checkered pattern
+            for (int i = 0; i < Display.BOARD_SIZE; i++) {
+                for (int j = 0; j < Display.BOARD_SIZE; j++) {
+                    if ((i + j) % 2 == 0) {
+                        g.setColor(new Color(23, 96, 153));
+                    } else {
+                        g.setColor(new Color(144, 213, 189));
+                    }
+
+                    g.fillRect(i * Display.CELL_SIZE, j * Display.CELL_SIZE, Display.CELL_SIZE, Display.CELL_SIZE);
                 }
-
-                g.fillRect(i * Display.CELL_SIZE, j * Display.CELL_SIZE, Display.CELL_SIZE, Display.CELL_SIZE);
             }
-        }
 
-        this.board.draw(g);
+            //Drawing pieces + moves
+            this.board.draw(g);
+        } else {
+            //End screen
+            g.setColor(new Color(23, 96, 153));
+            g.fillRect(0, 0, this.getWidth(), this.getHeight());
+            g.setColor(this.board.getWinner().getDisplayColor());
+            g.setFont(new Font("Arial black", Font.PLAIN, 30));
+            g.drawString("Les " + this.board.getWinner().getDisplayName() + " ont gagnés.", 180, 300);
+            g.setColor(Color.WHITE);
+            g.setFont(new Font("Arial black", Font.PLAIN, 15));
+            g.drawString("Cliquez pour rejouer.", 260, 450);
+        }
     }
 }
