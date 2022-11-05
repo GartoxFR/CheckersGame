@@ -1,3 +1,4 @@
 # CheckersGame
-Ewan s’occupe de l’affichage
-Clément et Vincent s’occupent de la génération des coups jouables
+Un simple jeu de dame écrit en Java
+# Contexte
+Projet de première année à l'INSA de Lyon en groupe de 3 étudiants
